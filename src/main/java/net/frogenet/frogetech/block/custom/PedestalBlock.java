@@ -22,6 +22,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -65,24 +66,27 @@ public class PedestalBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    @NotNull
+    protected ItemInteractionResult useItemOn(@NotNull ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hitResult){
-        if(level.getBlockEntity(pos) instanceof PedestalBlockEntity pedestalBlockEntity){
-            if(player.isCrouching() && !level.isClientSide()){
-                ((ServerPlayer) player).openMenu(new SimpleMenuProvider(pedestalBlockEntity, Component.literal("Pedestal")), pos);
-                return ItemInteractionResult.SUCCESS;
+        if(level.getBlockEntity(pos) instanceof PedestalBlockEntity pedestalBlockEntity &&
+            !(stack.isEmpty() && pedestalBlockEntity.inventory.getStackInSlot(0).isEmpty() && !player.isCrouching())) {
+                if (player.isCrouching() && !level.isClientSide()) {
+                    ((ServerPlayer) player).openMenu(new SimpleMenuProvider(pedestalBlockEntity, Component.literal("Pedestal")), pos);
+                    return ItemInteractionResult.SUCCESS;
+                }
+                if (pedestalBlockEntity.inventory.getStackInSlot(0).isEmpty() && !stack.isEmpty() && !player.isCrouching()) {
+                    pedestalBlockEntity.inventory.insertItem(0, stack.copy(), false);
+                    stack.shrink(1);
+                    level.playSound(player, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1f, 2f);
+                } else if (stack.isEmpty() && !player.isCrouching()) {
+                    ItemStack stackOnPedestal = pedestalBlockEntity.inventory.extractItem(0, 1, false);
+                    player.setItemInHand(InteractionHand.MAIN_HAND, stackOnPedestal);
+                    pedestalBlockEntity.clearContents();
+                    level.playSound(player, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1f, 1f);
+                }
             }
-            if (pedestalBlockEntity.inventory.getStackInSlot(0).isEmpty() && !stack.isEmpty()) {
-                pedestalBlockEntity.inventory.insertItem(0, stack.copy(), false);
-                stack.shrink(1);
-                level.playSound(player, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1f, 2f);
-            } else if(stack.isEmpty()){
-                ItemStack stackOnPedestal = pedestalBlockEntity.inventory.extractItem(0, 1, false);
-                player.setItemInHand(InteractionHand.MAIN_HAND, stackOnPedestal);
-                pedestalBlockEntity.clearContents();
-                level.playSound(player, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1f, 1f);
-            }
-        }
+
         return ItemInteractionResult.SUCCESS;
     }
 }

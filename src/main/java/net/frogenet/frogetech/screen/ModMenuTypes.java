@@ -2,6 +2,7 @@ package net.frogenet.frogetech.screen;
 
 import net.frogenet.frogetech.Frogetech;
 import net.frogenet.frogetech.screen.custom.PedestalMenu;
+import net.frogenet.frogetech.screen.custom.ToadToasterMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -18,6 +19,8 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<PedestalMenu>> PEDESTAL_MENU =
             registerMenuType("pedestal_menu", PedestalMenu::new);
 
+    public static final DeferredHolder<MenuType<?>, MenuType<ToadToasterMenu>> TOAD_TOASTER_MENU =
+            registerMenuType("toad_toaster_menu", ToadToasterMenu::new);
 
     private static <T extends AbstractContainerMenu> DeferredHolder<MenuType<?>, MenuType<T>> registerMenuType(String name,
                                                                                                                IContainerFactory<T> factory){

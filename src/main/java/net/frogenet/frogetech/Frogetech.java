@@ -7,6 +7,7 @@ import net.frogenet.frogetech.item.ModCreativeModeTabs;
 import net.frogenet.frogetech.item.ModItems;
 import net.frogenet.frogetech.screen.ModMenuTypes;
 import net.frogenet.frogetech.screen.custom.PedestalScreen;
+import net.frogenet.frogetech.screen.custom.ToadToasterScreen;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -73,6 +74,7 @@ public class Frogetech {
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event){
             event.register(ModMenuTypes.PEDESTAL_MENU.get(), PedestalScreen::new);
+            event.register(ModMenuTypes.TOAD_TOASTER_MENU.get(), ToadToasterScreen::new);
         }
     }
 }

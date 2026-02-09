@@ -17,6 +17,10 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("pedestal_be", () -> BlockEntityType.Builder.of(
                     PedestalBlockEntity::new, ModBlocks.PEDESTAL.get()).build(null));
 
+    public static final Supplier<BlockEntityType<ToadToasterBlockEntity>> TOAD_TOASTER_BE =
+            BLOCK_ENTITIES.register("toad_toaster_be", () -> BlockEntityType.Builder.of(
+                    ToadToasterBlockEntity::new, ModBlocks.TOAD_TOASTER.get()).build(null));
+
 
     public static void register(IEventBus bus) {
         BLOCK_ENTITIES.register(bus);

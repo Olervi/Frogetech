@@ -27,6 +27,7 @@ public class ModCreativeModeTabs {
                     .displayItems(((itemDisplayParameters, output) -> {
                         output.accept(ModBlocks.SOLID_GUNK);
                         output.accept(ModBlocks.PEDESTAL.get());
+                        output.accept(ModBlocks.TOAD_TOASTER.get());
                     })).build());
 
     public static void register(IEventBus eventBus){

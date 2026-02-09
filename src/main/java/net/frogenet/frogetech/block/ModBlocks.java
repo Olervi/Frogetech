@@ -27,6 +27,8 @@ public class ModBlocks {
     public static final DeferredBlock<Block> PEDESTAL = registerBlock("pedestal",
             (properties -> new PedestalBlock(properties.noOcclusion())));
 
+    public static final DeferredBlock<Block> TOAD_TOASTER = registerBlock("toad_toaster",
+            (properties -> new ToadToasterBlock(properties.noOcclusion())));
 
 
 

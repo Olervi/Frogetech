@@ -24,6 +24,10 @@ neoForge {
 
     // This line is optional. Access Transformers are automatically detected
     // accessTransformers.add('src/main/resources/META-INF/accesstransformer.cfg')
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.

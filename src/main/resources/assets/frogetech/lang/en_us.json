@@ -3,5 +3,7 @@
   "creativetab.frogetech.frogetech_blocks": "FrogeTech Blocks",
   "block.frogetech.solid_gunk": "Solid Gunk",
   "item.frogetech.gunk_ball": "Gunk Ball",
-  "block.frogetech.toad_toaster": "Toad Toaster"
+  "block.frogetech.toad_toaster": "Toad Toaster",
+  "item.frogetech.pedestal": "Pedestal",
+  "block.frogetech.pedestal": "Pedestal"
 }
