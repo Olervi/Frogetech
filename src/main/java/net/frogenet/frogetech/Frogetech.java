@@ -3,6 +3,9 @@ package net.frogenet.frogetech;
 import com.mojang.logging.LogUtils;
 import net.frogenet.frogetech.block.ModBlocks;
 import net.frogenet.frogetech.block.entity.ModBlockEntities;
+import net.frogenet.frogetech.entity.ModEntities;
+import net.frogenet.frogetech.entity.client.FrogRenderer;
+import net.frogenet.frogetech.entity.custom.FrogEntity;
 import net.frogenet.frogetech.item.ModCreativeModeTabs;
 import net.frogenet.frogetech.item.ModItems;
 import net.frogenet.frogetech.screen.ModMenuTypes;
@@ -21,6 +24,7 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.slf4j.Logger;
 
@@ -41,6 +45,7 @@ public class Frogetech {
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
+        ModEntities.register(modEventBus);
 
         modEventBus.addListener(this::addCreative);
     }
@@ -66,15 +71,23 @@ public class Frogetech {
 
     @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
+
         @SubscribeEvent
         public static void registerBER(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL_BE.get(), PedestalBlockEntityRenderer::new);
+
+            event.registerEntityRenderer(ModEntities.FROG.get(), FrogRenderer::new);
         }
 
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event){
             event.register(ModMenuTypes.PEDESTAL_MENU.get(), PedestalScreen::new);
             event.register(ModMenuTypes.TOAD_TOASTER_MENU.get(), ToadToasterScreen::new);
+        }
+
+        @SubscribeEvent
+        public static void registerAttributes(EntityAttributeCreationEvent event) {
+            event.put(ModEntities.FROG.get(), FrogEntity.createAttributes().build());
         }
     }
 }
