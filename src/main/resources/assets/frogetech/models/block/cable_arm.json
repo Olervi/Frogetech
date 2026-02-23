@@ -1,0 +1,21 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cable": "frogetech:block/cable",
+    "particle": "frogetech:block/cable"
+  },
+  "elements": [
+    {
+      "from": [6, 10, 6],
+      "to": [10, 16, 10],
+      "faces": {
+        "north": { "uv": [0, 0, 4, 6], "texture": "#cable" },
+        "south": { "uv": [0, 0, 4, 6], "texture": "#cable" },
+        "east":  { "uv": [0, 0, 4, 6], "texture": "#cable" },
+        "west":  { "uv": [0, 0, 4, 6], "texture": "#cable" },
+        "up":    { "uv": [0, 0, 4, 4], "texture": "#cable" },
+        "down":  { "uv": [0, 0, 4, 4], "texture": "#cable" }
+      }
+    }
+  ]
+}

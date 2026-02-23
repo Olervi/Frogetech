@@ -21,6 +21,10 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("toad_toaster_be", () -> BlockEntityType.Builder.of(
                     ToadToasterBlockEntity::new, ModBlocks.TOAD_TOASTER.get()).build(null));
 
+    public static final Supplier<BlockEntityType<CableBlockEntity>> CABLE_BE =
+            BLOCK_ENTITIES.register("cable_be", () -> BlockEntityType.Builder.of(
+                    CableBlockEntity::new, ModBlocks.CABLE.get()).build(null));
+
 
     public static void register(IEventBus bus) {
         BLOCK_ENTITIES.register(bus);

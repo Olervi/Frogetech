@@ -18,6 +18,8 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
     protected void generate(){
         dropSelf(ModBlocks.SOLID_GUNK.get());
         dropSelf(ModBlocks.PEDESTAL.get());
+        dropSelf(ModBlocks.TOAD_TOASTER.get());
+        dropSelf(ModBlocks.CABLE.get());
     }
 
 

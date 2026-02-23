@@ -3,6 +3,7 @@ package net.frogenet.frogetech;
 import com.mojang.logging.LogUtils;
 import net.frogenet.frogetech.block.ModBlocks;
 import net.frogenet.frogetech.block.entity.ModBlockEntities;
+import net.frogenet.frogetech.energy.network.QuakNetworkEvents;
 import net.frogenet.frogetech.entity.ModEntities;
 import net.frogenet.frogetech.entity.client.FrogRenderer;
 import net.frogenet.frogetech.entity.custom.FrogEntity;
@@ -11,6 +12,7 @@ import net.frogenet.frogetech.item.ModItems;
 import net.frogenet.frogetech.screen.ModMenuTypes;
 import net.frogenet.frogetech.screen.custom.PedestalScreen;
 import net.frogenet.frogetech.screen.custom.ToadToasterScreen;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -38,6 +40,7 @@ public class Frogetech {
         modEventBus.addListener(this::commonSetup);
 
         NeoForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(new QuakNetworkEvents());
 
         ModCreativeModeTabs.register(modEventBus);
         ModMenuTypes.register(modEventBus);
@@ -48,6 +51,10 @@ public class Frogetech {
         ModEntities.register(modEventBus);
 
         modEventBus.addListener(this::addCreative);
+    }
+
+    public static ResourceLocation rl (String path){
+        return ResourceLocation.fromNamespaceAndPath(MODID,path);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

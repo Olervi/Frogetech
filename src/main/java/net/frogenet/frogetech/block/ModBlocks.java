@@ -30,7 +30,11 @@ public class ModBlocks {
     public static final DeferredBlock<Block> TOAD_TOASTER = registerBlock("toad_toaster",
             (properties -> new ToadToasterBlock(properties.noOcclusion())));
 
-
+    public static final DeferredBlock<Block> CABLE = registerBlock("cable",
+            properties -> new CableBlock(properties
+                    .noOcclusion()
+                    .noCollission()
+                    .strength(0.5f)));
 
 
 

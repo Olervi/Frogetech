@@ -28,6 +28,7 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.SOLID_GUNK);
                         output.accept(ModBlocks.PEDESTAL.get());
                         output.accept(ModBlocks.TOAD_TOASTER.get());
+                        output.accept(ModBlocks.CABLE.get());
                     })).build());
 
     public static void register(IEventBus eventBus){
