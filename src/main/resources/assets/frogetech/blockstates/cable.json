@@ -3,19 +3,35 @@
     { "apply": {"model": "frogetech:block/cable_core" } },
     {
       "when": { "north":  "true" },
-      "apply": { "model":  "frogetech:block/cable_arm", "x":  90, "y":  180}
+      "apply": {
+        "model": "frogetech:block/cable_arm",
+        "x": 90,
+        "y": 0
+      }
     },
     {
       "when": { "south": "true" },
-      "apply": { "model": "frogetech:block/cable_arm", "x": 90 }
+      "apply": {
+        "model": "frogetech:block/cable_arm",
+        "x": 90,
+        "y": 180
+      }
     },
     {
       "when": { "east": "true" },
-      "apply": { "model": "frogetech:block/cable_arm", "x": 90, "y": 270 }
+      "apply": {
+        "model": "frogetech:block/cable_arm",
+        "x": 90,
+        "y": 90
+      }
     },
     {
       "when": { "west": "true" },
-      "apply": { "model": "frogetech:block/cable_arm", "x": 90, "y": 90 }
+      "apply": {
+        "model": "frogetech:block/cable_arm",
+        "x": 90,
+        "y": 270
+      }
     },
     {
       "when": { "up": "true" },

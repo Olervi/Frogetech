@@ -3,6 +3,7 @@ package net.frogenet.frogetech;
 import com.mojang.logging.LogUtils;
 import net.frogenet.frogetech.block.ModBlocks;
 import net.frogenet.frogetech.block.entity.ModBlockEntities;
+import net.frogenet.frogetech.block.entity.renderer.PedestalBlockEntityRenderer;
 import net.frogenet.frogetech.energy.network.QuakNetworkEvents;
 import net.frogenet.frogetech.entity.ModEntities;
 import net.frogenet.frogetech.entity.client.FrogRenderer;
@@ -10,6 +11,7 @@ import net.frogenet.frogetech.entity.custom.FrogEntity;
 import net.frogenet.frogetech.item.ModCreativeModeTabs;
 import net.frogenet.frogetech.item.ModItems;
 import net.frogenet.frogetech.screen.ModMenuTypes;
+import net.frogenet.frogetech.screen.custom.CoalGeneratorScreen;
 import net.frogenet.frogetech.screen.custom.PedestalScreen;
 import net.frogenet.frogetech.screen.custom.ToadToasterScreen;
 import net.minecraft.resources.ResourceLocation;
@@ -20,7 +22,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.frogenet.frogetech.block.entity.renderer.PedestalBlockEntityRenderer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
@@ -90,6 +91,7 @@ public class Frogetech {
         public static void registerScreens(RegisterMenuScreensEvent event){
             event.register(ModMenuTypes.PEDESTAL_MENU.get(), PedestalScreen::new);
             event.register(ModMenuTypes.TOAD_TOASTER_MENU.get(), ToadToasterScreen::new);
+            event.register(ModMenuTypes.COAL_GENERATOR_MENU.get(), CoalGeneratorScreen::new);
         }
 
         @SubscribeEvent

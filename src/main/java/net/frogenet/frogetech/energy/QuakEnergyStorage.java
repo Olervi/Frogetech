@@ -69,5 +69,6 @@ public class QuakEnergyStorage implements IQuakStorage{
     //Only for Testing
     public void setEnergy(int energy) {
         this.energy = Math.min(energy, capacity);
+        onEnergyChanged();
     }
 }

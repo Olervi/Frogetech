@@ -20,6 +20,7 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.PEDESTAL.get());
         dropSelf(ModBlocks.TOAD_TOASTER.get());
         dropSelf(ModBlocks.CABLE.get());
+        dropSelf(ModBlocks.COAL_GENERATOR.get());
     }
 
 

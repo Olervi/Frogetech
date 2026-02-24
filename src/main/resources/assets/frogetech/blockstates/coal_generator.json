@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "frogetech:block/coal_generator"
+    }
+  }
+}

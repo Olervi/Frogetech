@@ -41,7 +41,7 @@ public class CableBlock extends BaseEntityBlock {
     //Arm in each dir
     private static final VoxelShape ARM_NORTH = Block.box(6, 6, 0, 10, 10, 6);
     private static final VoxelShape ARM_SOUTH = Block.box(6, 6, 10, 10, 10, 16);
-    private static final VoxelShape ARM_EAST = Block.box(10, 6, 10, 16, 10, 10);
+    private static final VoxelShape ARM_EAST = Block.box(10, 6, 6, 16, 10, 10);
     private static final VoxelShape ARM_WEST = Block.box(0, 6, 6, 6, 10, 10);
     private static final VoxelShape ARM_UP = Block.box(6, 10, 6, 10, 16, 10);
     private static final VoxelShape ARM_DOWN = Block.box(6, 0, 6, 10, 6, 10);
@@ -51,9 +51,12 @@ public class CableBlock extends BaseEntityBlock {
         super(properties);
         //Default no connection
         registerDefaultState(this.stateDefinition.any()
-                .setValue(NORTH, false).setValue(SOUTH, false)
-                .setValue(EAST, false).setValue(WEST, false)
-                .setValue(UP, false).setValue(DOWN, false));
+                .setValue(NORTH, false)
+                .setValue(SOUTH, false)
+                .setValue(EAST, false)
+                .setValue(WEST, false)
+                .setValue(UP, false)
+                .setValue(DOWN, false));
     }
 
     @Override

@@ -1,10 +1,13 @@
 package net.frogenet.frogetech.block;
 
 import net.frogenet.frogetech.Frogetech;
+import net.frogenet.frogetech.block.custom.CableBlock;
+import net.frogenet.frogetech.block.custom.CoalGeneratorBlock;
+import net.frogenet.frogetech.block.custom.PedestalBlock;
+import net.frogenet.frogetech.block.custom.ToadToasterBlock;
 import net.frogenet.frogetech.item.ModItems;
-import net.frogenet.frogetech.block.custom.*;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
@@ -33,8 +36,10 @@ public class ModBlocks {
     public static final DeferredBlock<Block> CABLE = registerBlock("cable",
             properties -> new CableBlock(properties
                     .noOcclusion()
-                    .noCollission()
                     .strength(0.5f)));
+
+    public static final DeferredBlock<Block> COAL_GENERATOR = registerBlock("coal_generator",
+            properties -> new CoalGeneratorBlock(properties.noOcclusion().strength(2f)));
 
 
 

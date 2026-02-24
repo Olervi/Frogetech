@@ -29,6 +29,7 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.PEDESTAL.get());
                         output.accept(ModBlocks.TOAD_TOASTER.get());
                         output.accept(ModBlocks.CABLE.get());
+                        output.accept(ModBlocks.COAL_GENERATOR.get());
                     })).build());
 
     public static void register(IEventBus eventBus){
