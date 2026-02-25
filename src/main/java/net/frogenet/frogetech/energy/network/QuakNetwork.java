@@ -1,6 +1,8 @@
 package net.frogenet.frogetech.energy.network;
 
+import net.frogenet.frogetech.block.entity.CableBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 
@@ -14,44 +16,51 @@ public class QuakNetwork {
         this.id = UUID.randomUUID();
     }
 
-    private QuakNetwork(UUID id){
+    private int lastTransferredAmount = 0;
+
+    private QuakNetwork(UUID id) {
         this.id = id;
     }
 
-    public UUID getId(){ return id;}
+    public UUID getId() {
+        return id;
+    }
 
     // Member Management
-    public void addMember(QuakNetworkMember member){
+    public void addMember(QuakNetworkMember member) {
         members.put(member.getNetworkPos(), member);
         member.onJoinNetwork(this);
     }
 
-    public void removeMember(BlockPos pos){
+    public void removeMember(BlockPos pos) {
         QuakNetworkMember member = members.remove(pos);
         if (member != null) {
             member.onLeaveNetwork();
         }
     }
 
-    public boolean hasMember(BlockPos pos){
+    public boolean hasMember(BlockPos pos) {
         return members.containsKey(pos);
     }
 
-    public QuakNetworkMember getMember(BlockPos pos){
+    public QuakNetworkMember getMember(BlockPos pos) {
         return members.get(pos);
     }
 
-    public Collection<QuakNetworkMember> getAllMembers(){
+    public Collection<QuakNetworkMember> getAllMembers() {
         return Collections.unmodifiableCollection(members.values());
     }
 
-    public int getMemberCount() {return members.size();}
+    public int getMemberCount() {
+        return members.size();
+    }
 
     //Energy Tick
 
-    public void tick(){
+    public void tick() {
         int networkTransferLimit = getNetworkTransferLimit();
-        if(networkTransferLimit <= 0) return;
+        lastTransferredAmount = 0;
+        if (networkTransferLimit <= 0) return;
 
         int availableEnergy = 0;
         List<QuakNetworkMember> producers = new ArrayList<>();
@@ -82,6 +91,7 @@ public class QuakNetwork {
         if (totalDemand <= 0) return;
 
         int toDistribute = Math.min(availableEnergy, totalDemand);
+        lastTransferredAmount = toDistribute;
 
         int remainingToExtract = toDistribute;
         for (QuakNetworkMember producer : producers) {
@@ -99,6 +109,21 @@ public class QuakNetwork {
             remainingToInsert -= provider.getEnergyStorage()
                     .insertEnergy(share, false);
         }
+
+        lastTransferredAmount = toDistribute;
+
+        for (QuakNetworkMember member : members.values()) {
+            if (member.isConductor() && member instanceof CableBlockEntity cable) {
+                cable.setCachedThroughput(lastTransferredAmount);
+                Level level = cable.getNetworkLevel();
+                BlockPos cablePos = cable.getNetworkPos();
+                if (level != null) {
+                    level.sendBlockUpdated(cablePos,
+                            level.getBlockState(cablePos),
+                            level.getBlockState(cablePos), 3);
+                }
+            }
+        }
     }
 
     private int getNetworkTransferLimit() {
@@ -111,6 +136,10 @@ public class QuakNetwork {
             }
         }
         return hasConductor ? min : Integer.MAX_VALUE;
+    }
+
+    public int getLastTransferredAmount() {
+        return lastTransferredAmount;
     }
 
     //Net Merge
@@ -132,7 +161,7 @@ public class QuakNetwork {
 
     @Override
     public String toString() {
-        return "QuakNetwork{id=" + id.toString().substring(0,8) +
-               ", members=" + members.size() + "}";
+        return "QuakNetwork{id=" + id.toString().substring(0, 8) +
+                ", members=" + members.size() + "}";
     }
 }

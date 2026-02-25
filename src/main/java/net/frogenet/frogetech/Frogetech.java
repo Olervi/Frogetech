@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import net.frogenet.frogetech.block.ModBlocks;
 import net.frogenet.frogetech.block.entity.ModBlockEntities;
 import net.frogenet.frogetech.block.entity.renderer.PedestalBlockEntityRenderer;
+import net.frogenet.frogetech.client.QuakHudOverlay;
 import net.frogenet.frogetech.energy.network.QuakNetworkEvents;
 import net.frogenet.frogetech.entity.ModEntities;
 import net.frogenet.frogetech.entity.client.FrogRenderer;
@@ -23,7 +24,9 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -52,6 +55,10 @@ public class Frogetech {
         ModEntities.register(modEventBus);
 
         modEventBus.addListener(this::addCreative);
+
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            NeoForge.EVENT_BUS.register(new QuakHudOverlay());
+        }
     }
 
     public static ResourceLocation rl (String path){
@@ -97,6 +104,11 @@ public class Frogetech {
         @SubscribeEvent
         public static void registerAttributes(EntityAttributeCreationEvent event) {
             event.put(ModEntities.FROG.get(), FrogEntity.createAttributes().build());
+        }
+
+        @SubscribeEvent
+        public static void onRegsiterGuiLayers(RegisterGuiLayersEvent event) {
+
         }
     }
 }

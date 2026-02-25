@@ -3,6 +3,8 @@ package net.frogenet.frogetech.block.custom;
 import com.mojang.serialization.MapCodec;
 import net.frogenet.frogetech.block.entity.ModBlockEntities;
 import net.frogenet.frogetech.block.entity.ToadToasterBlockEntity;
+import net.frogenet.frogetech.energy.network.QuakNetworkManager;
+import net.frogenet.frogetech.energy.network.QuakNetworkMember;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -69,7 +71,21 @@ public class ToadToasterBlock extends BaseEntityBlock {
             if (blockEntity instanceof ToadToasterBlockEntity toasterEntity) {
                 toasterEntity.drops();
             }
+            if (!level.isClientSide()) {
+                QuakNetworkManager.get(level).onMemberRemoved(pos);
+            }
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+
+    @Override
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        super.onPlace(state, level, pos, oldState, movedByPiston);
+        if (!level.isClientSide()) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof QuakNetworkMember member) {
+                QuakNetworkManager.get(level).onMemberAdded(member);
+            }
+        }
     }
 }
