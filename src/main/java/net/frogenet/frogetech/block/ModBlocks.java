@@ -31,15 +31,25 @@ public class ModBlocks {
             (properties -> new PedestalBlock(properties.noOcclusion())));
 
     public static final DeferredBlock<Block> TOAD_TOASTER = registerBlock("toad_toaster",
-            (properties -> new ToadToasterBlock(properties.noOcclusion())));
+            (properties -> new ToadToasterBlock(properties
+                    .noOcclusion()
+                    .strength(2.5f, 5.0f)
+                    .sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops())));
 
     public static final DeferredBlock<Block> CABLE = registerBlock("cable",
             properties -> new CableBlock(properties
                     .noOcclusion()
-                    .strength(0.5f)));
+                    .strength(0.5f, 1.0f)
+                    .sound(SoundType.COPPER)
+                    .requiresCorrectToolForDrops()));
 
     public static final DeferredBlock<Block> COAL_GENERATOR = registerBlock("coal_generator",
-            properties -> new CoalGeneratorBlock(properties.noOcclusion().strength(2f)));
+            properties -> new CoalGeneratorBlock(properties
+                    .noOcclusion()
+                    .strength(2f)
+                    .sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops()));
 
 
 

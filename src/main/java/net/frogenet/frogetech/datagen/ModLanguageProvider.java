@@ -22,7 +22,7 @@ public class ModLanguageProvider extends LanguageProvider {
 
         add(ModItems.GUNK_BALL.get(), "Gunk Ball");
 
-        add("itemGroup.frogetech.frogetech_items", "Frogetech Items");
-        add("itemGroup.frogetech.frogetech_blocks", "Frogetech Blocks");
+        add("creativetab.frogetech.frogetech_items", "Frogetech Items");
+        add("creativetab.frogetech.frogetech_blocks", "Frogetech Blocks");
     }
 }

@@ -34,5 +34,7 @@ public class DataGenerators {
                 new ModLootTableProvider(output, lookupProvider));
         generator.addProvider(event.includeServer(),
                 new ModRecipeProvider(output, lookupProvider));
+        generator.addProvider(event.includeServer(),
+                new ModBlockTagProvider(output, lookupProvider, event.getExistingFileHelper()));
     }
 }
