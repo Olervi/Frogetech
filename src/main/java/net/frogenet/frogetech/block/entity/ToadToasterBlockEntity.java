@@ -169,9 +169,7 @@ public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity imple
             return;
         }
 
-        energyStorage.setEnergy(
-                Math.max(0, energyStorage.getEnergy() - ENERGY_PER_TICK)
-        );
+        energyStorage.extractEnergyInternal(ENERGY_PER_TICK);
         cookingProgress++;
         setChanged();
 

@@ -86,10 +86,7 @@ public class CoalGeneratorBlockEntity extends AbstractQuakMachineBlockEntity imp
 
         if (be.burnTime > 0) {
             be.burnTime--;
-            be.energyStorage.setEnergy(
-                    Math.min(be.energyStorage.getEnergy() + TIER_MAX_EXTRACT,
-                            be.energyStorage.getMaxEnergy())
-            );
+            be.energyStorage.insertEnergyInternal(TIER_MAX_EXTRACT);
             setChanged(level, pos, state);
         }
 

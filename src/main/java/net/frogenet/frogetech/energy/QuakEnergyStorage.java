@@ -31,6 +31,14 @@ public class QuakEnergyStorage implements IQuakStorage{
        return accepted;
     }
 
+    public int insertEnergyInternal(int amount) {
+        if (amount <= 0) return 0;
+        int accepted = Math.min(capacity - energy, amount);
+        energy += accepted;
+        onEnergyChanged();
+        return accepted;
+    }
+
     @Override
     public int extractEnergy(int amount, boolean simulate) {
         if (!canExtract() || amount <= 0) return 0;
@@ -39,6 +47,14 @@ public class QuakEnergyStorage implements IQuakStorage{
             energy -= extracted;
             onEnergyChanged();
         }
+        return extracted;
+    }
+
+    public int extractEnergyInternal(int amount) {
+        if (amount <= 0) return 0;
+        int extracted = Math.min(energy, amount);
+        energy -= extracted;
+        onEnergyChanged();
         return extracted;
     }
 
@@ -67,6 +83,11 @@ public class QuakEnergyStorage implements IQuakStorage{
     }
 
     //Only for Testing
+
+    /**
+     * @deprecated Only for testing and nbt
+     */
+    @Deprecated
     public void setEnergy(int energy) {
         this.energy = Math.min(energy, capacity);
         onEnergyChanged();

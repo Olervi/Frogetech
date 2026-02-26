@@ -60,7 +60,11 @@ public class QuakNetwork {
     public void tick() {
         int networkTransferLimit = getNetworkTransferLimit();
         lastTransferredAmount = 0;
-        if (networkTransferLimit <= 0) return;
+
+        if (networkTransferLimit <= 0) {
+            updateCableThroughput();
+            return;
+        }
 
         int availableEnergy = 0;
         List<QuakNetworkMember> producers = new ArrayList<>();
@@ -73,7 +77,10 @@ public class QuakNetwork {
             }
         }
 
-        if (availableEnergy <= 0) return;
+        if (availableEnergy <= 0) {
+            updateCableThroughput();
+            return;
+        }
 
         List<QuakNetworkMember> consumers = new ArrayList<>();
         int totalDemand = 0;
@@ -111,7 +118,10 @@ public class QuakNetwork {
         }
 
         lastTransferredAmount = toDistribute;
+        updateCableThroughput();
+    }
 
+    private void updateCableThroughput() {
         for (QuakNetworkMember member : members.values()) {
             if (member.isConductor() && member instanceof CableBlockEntity cable) {
                 cable.setCachedThroughput(lastTransferredAmount);
