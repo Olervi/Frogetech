@@ -17,6 +17,12 @@ public class ModItems {
     public static final DeferredItem<Item> BASE_FROG_SPAWN_EGG = ITEMS.registerItem("base_frog_spawn_egg",
             properties -> new SpawnEggItem(ModEntities.FROG.get(), 0x006309, 0x4ad240, properties));
 
+    public static final DeferredItem<Item> ADVANCED_UPGRADE = ITEMS.registerItem("advanced_upgrade",
+            Item::new, new Item.Properties().stacksTo(1));
+
+    public static final DeferredItem<Item> ELITE_UPGRADE = ITEMS.registerItem("elite_upgrade",
+            Item::new, new Item.Properties().stacksTo(1));
+
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

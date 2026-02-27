@@ -23,5 +23,7 @@ public class ModItemModelProvider extends ItemModelProvider {
 
 
         basicItem(ModItems.GUNK_BALL.get());
+        basicItem(ModItems.ADVANCED_UPGRADE.get());
+        basicItem(ModItems.ELITE_UPGRADE.get());
     }
 }

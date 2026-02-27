@@ -19,6 +19,8 @@ public class ModCreativeModeTabs {
                     .title(Component.translatable("creativetab.frogetech.frogetech_items"))
                     .displayItems(((itemDisplayParameters, output) -> {
                         output.accept(ModItems.GUNK_BALL);
+                        output.accept(ModItems.ADVANCED_UPGRADE);
+                        output.accept(ModItems.ELITE_UPGRADE);
                     })).build());
 
     public static final Supplier<CreativeModeTab> FROGETECH_BLOCKS_TAB = CREATIVE_MODE_TAB.register("frogetech_blocks_tab",

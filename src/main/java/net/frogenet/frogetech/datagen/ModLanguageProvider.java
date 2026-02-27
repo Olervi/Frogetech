@@ -21,6 +21,8 @@ public class ModLanguageProvider extends LanguageProvider {
         add(ModBlocks.SOLID_GUNK.get(), "Solid Gunk");
 
         add(ModItems.GUNK_BALL.get(), "Gunk Ball");
+        add(ModItems.ADVANCED_UPGRADE.get(), "Advanced Upgrade");
+        add(ModItems.ELITE_UPGRADE.get(), "Elite Upgrade");
 
         add("creativetab.frogetech.frogetech_items", "Frogetech Items");
         add("creativetab.frogetech.frogetech_blocks", "Frogetech Blocks");
