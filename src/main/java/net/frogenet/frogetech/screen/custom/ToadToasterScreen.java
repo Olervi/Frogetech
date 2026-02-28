@@ -2,12 +2,11 @@ package net.frogenet.frogetech.screen.custom;
 
 import net.frogenet.frogetech.Frogetech;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public class ToadToasterScreen extends AbstractContainerScreen<ToadToasterMenu> {
+public class ToadToasterScreen extends AbstractQuakMachineScreen<ToadToasterMenu> {
 
 
     private static final ResourceLocation GUI_TEXTURE =
@@ -20,7 +19,7 @@ public class ToadToasterScreen extends AbstractContainerScreen<ToadToasterMenu> 
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mx, int my) {
+    protected void renderMainBg(GuiGraphics guiGraphics, float partialTick, int mx, int my) {
         guiGraphics.blit(GUI_TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
 
         if (menu.isCrafting()) {

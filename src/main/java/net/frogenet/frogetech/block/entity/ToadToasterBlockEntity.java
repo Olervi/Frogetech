@@ -28,10 +28,7 @@ import java.util.Optional;
 public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity implements MenuProvider {
 
     //Tiered Values
-    private static final int TIER_MAX_BUFFER = 5_000;
-    private static final int TIER_MAX_INSERT = 40;
     private static final int TIER_MAX_EXTRACT = 0;
-    private static final int TIER_MAX_TRANSFER = 40;
     private static final int ENERGY_PER_TICK = 20;
 
     public final ItemStackHandler itemHandler = new ItemStackHandler(2) {
@@ -71,6 +68,7 @@ public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity imple
                 case 1 -> cookingTotalTime;
                 case 2 -> energyStorage.getEnergy();
                 case 3 -> energyStorage.getMaxEnergy();
+                case 4 -> currentTier.level;
                 default -> 0;
             };
         }
@@ -85,7 +83,7 @@ public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity imple
 
         @Override
         public int getCount() {
-            return 4;
+            return 5;
         }
     };
 
@@ -102,12 +100,12 @@ public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity imple
 
     @Override
     public int getMaxBuffer() {
-        return TIER_MAX_BUFFER;
+        return currentTier.consumerBuffer;
     }
 
     @Override
     public int getMaxInsert() {
-        return TIER_MAX_INSERT;
+        return currentTier.consumerEnergyPerTick * 2;
     }
 
     @Override
@@ -117,7 +115,7 @@ public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity imple
 
     @Override
     public int getMaxTransfer() {
-        return TIER_MAX_TRANSFER;
+        return currentTier.consumerEnergyPerTick * 2;
     }
 
     @Override
@@ -154,7 +152,7 @@ public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity imple
         }
 
         SmeltingRecipe recipe = recipeHolder.get().value();
-        cookingTotalTime = recipe.getCookingTime();
+        cookingTotalTime = (int) (recipe.getCookingTime() / currentTier.consumerEfficiency);
 
         if (!canCook(recipe, recipeInput)) {
             if (cookingProgress > 0) {
@@ -164,12 +162,13 @@ public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity imple
             return;
         }
 
-        if (energyStorage.getEnergy() < ENERGY_PER_TICK) {
+        int energyNeeded = (int) (currentTier.consumerEnergyPerTick / currentTier.consumerEfficiency);
+        if (energyStorage.getEnergy() < energyNeeded) {
             setChanged();
             return;
         }
 
-        energyStorage.extractEnergyInternal(ENERGY_PER_TICK);
+        energyStorage.extractEnergyInternal(energyNeeded);
         cookingProgress++;
         setChanged();
 

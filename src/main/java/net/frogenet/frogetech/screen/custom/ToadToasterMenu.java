@@ -6,12 +6,15 @@ import net.frogenet.frogetech.screen.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
-public class ToadToasterMenu extends AbstractContainerMenu {
+public class ToadToasterMenu extends AbstractQuakMachineMenu {
 
     private final ToadToasterBlockEntity blockEntity;
     private final ContainerData data;
@@ -32,7 +35,7 @@ public class ToadToasterMenu extends AbstractContainerMenu {
     }
     private static final int VANILLA_SLOTS = HOTBAR_SLOTS + INV_SLOTS;
     private static final int TE_FIRST_SLOT = VANILLA_SLOTS;
-    private static final int TE_SLOT_COUNT = 2;
+    private static final int TE_SLOT_COUNT = 3;
 
     public boolean isEnabled() {
         return data.get(2) > 0;
@@ -43,7 +46,8 @@ public class ToadToasterMenu extends AbstractContainerMenu {
         this(id, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(4));
     }
     public ToadToasterMenu(int id, Inventory inv, BlockEntity be, ContainerData data) {
-        super(ModMenuTypes.TOAD_TOASTER_MENU.get(), id);
+        super(ModMenuTypes.TOAD_TOASTER_MENU.get(), id,
+                (ToadToasterBlockEntity) be);
 
         this.blockEntity = ((ToadToasterBlockEntity) be);
         this.data = data;
@@ -55,6 +59,7 @@ public class ToadToasterMenu extends AbstractContainerMenu {
         this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 0, 44, 18));
         //OUTPUT SLOT
         this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 1, 107, 37));
+        addUpgradeSlot();
 
         addDataSlots(data);
     }
@@ -74,8 +79,12 @@ public class ToadToasterMenu extends AbstractContainerMenu {
         return data.get(3);
     }
 
+    private int getTierLevel() {
+        return data.get(4);
+    }
+
     @Override
-    public ItemStack quickMoveStack(Player player, int index) {
+    public ItemStack handleQuickMove(Player player, int index) {
         Slot source = slots.get(index);
         if (source == null || !source.hasItem()) return ItemStack.EMPTY;
         ItemStack stack = source.getItem();

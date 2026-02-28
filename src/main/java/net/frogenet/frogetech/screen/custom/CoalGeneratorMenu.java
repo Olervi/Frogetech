@@ -6,27 +6,31 @@ import net.frogenet.frogetech.screen.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
-public class CoalGeneratorMenu extends AbstractContainerMenu {
+public class CoalGeneratorMenu extends AbstractQuakMachineMenu {
     private static final int HOTBAR_SLOTS = 9;
     private static final int INV_SLOTS = 27;
     private static final int VANILLA_SLOTS = HOTBAR_SLOTS + INV_SLOTS;
     private static final int TE_FIRST_SLOT = VANILLA_SLOTS;
-    private static final int TE_SLOT_COUNT = 1;
+    private static final int TE_SLOT_COUNT = 2;
     public final CoalGeneratorBlockEntity blockEntity;
     private final ContainerData data;
 
     public CoalGeneratorMenu(int id, Inventory inv, FriendlyByteBuf buf) {
         this(id, inv, inv.player.level().getBlockEntity(buf.readBlockPos()),
-                new SimpleContainerData(4));
+                new SimpleContainerData(5));
     }
 
     public CoalGeneratorMenu(int id, Inventory inv, BlockEntity be, ContainerData data) {
-        super(ModMenuTypes.COAL_GENERATOR_MENU.get(), id);
+        super(ModMenuTypes.COAL_GENERATOR_MENU.get(), id,
+                (CoalGeneratorBlockEntity) be);
         this.blockEntity = (CoalGeneratorBlockEntity) be;
         this.data = data;
 
@@ -35,12 +39,13 @@ public class CoalGeneratorMenu extends AbstractContainerMenu {
         addPlayerInventory(inv);
 
         this.addSlot(new SlotItemHandler(blockEntity.inventory, 0, 80, 35));
+        addUpgradeSlot();
 
         addDataSlots(this.data);
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int index) {
+    public ItemStack handleQuickMove(Player player, int index) {
         Slot source = slots.get(index);
         if (source == null || !source.hasItem()) return ItemStack.EMPTY;
         ItemStack stack = source.getItem();
@@ -99,5 +104,9 @@ public class CoalGeneratorMenu extends AbstractContainerMenu {
 
     public int getMaxEnergy() {
         return data.get(3);
+    }
+
+    public int getTierLevel() {
+        return data.get(4);
     }
 }

@@ -23,10 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class CoalGeneratorBlockEntity extends AbstractQuakMachineBlockEntity implements MenuProvider {
 
-    private static final int TIER_MAX_BUFFER = 10_000;
     private static final int TIER_MAX_INSERT = 0;
-    private static final int TIER_MAX_EXTRACT = 20;
-    private static final int TIER_MAX_TRANSFER = 20;
 
     public final ItemStackHandler inventory = new ItemStackHandler(1) {
         @Override
@@ -50,6 +47,7 @@ public class CoalGeneratorBlockEntity extends AbstractQuakMachineBlockEntity imp
                 case 1 -> maxBurnTime;
                 case 2 -> energyStorage.getEnergy();
                 case 3 -> energyStorage.getMaxEnergy();
+                case 4 -> currentTier.level;
                 default -> 0;
             };
         }
@@ -64,7 +62,7 @@ public class CoalGeneratorBlockEntity extends AbstractQuakMachineBlockEntity imp
 
         @Override
         public int getCount() {
-            return 4;
+            return 5;
         }
     };
 
@@ -86,7 +84,8 @@ public class CoalGeneratorBlockEntity extends AbstractQuakMachineBlockEntity imp
 
         if (be.burnTime > 0) {
             be.burnTime--;
-            be.energyStorage.insertEnergyInternal(TIER_MAX_EXTRACT);
+            int output = (int) (be.currentTier.generatorOutput * be.currentTier.generatorEfficiency);
+            be.energyStorage.insertEnergyInternal(output);
             setChanged(level, pos, state);
         }
 
@@ -97,7 +96,7 @@ public class CoalGeneratorBlockEntity extends AbstractQuakMachineBlockEntity imp
 
     @Override
     public int getMaxBuffer() {
-        return TIER_MAX_BUFFER;
+        return currentTier.generatorBuffer;
     }
 
     @Override
@@ -107,12 +106,12 @@ public class CoalGeneratorBlockEntity extends AbstractQuakMachineBlockEntity imp
 
     @Override
     public int getMaxExtract() {
-        return TIER_MAX_EXTRACT;
+        return currentTier.generatorOutput;
     }
 
     @Override
     public int getMaxTransfer() {
-        return TIER_MAX_TRANSFER;
+        return currentTier.generatorOutput;
     }
 
     @Override

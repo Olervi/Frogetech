@@ -2,12 +2,11 @@ package net.frogenet.frogetech.screen.custom;
 
 import net.frogenet.frogetech.Frogetech;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public class CoalGeneratorScreen extends AbstractContainerScreen<CoalGeneratorMenu> {
+public class CoalGeneratorScreen extends AbstractQuakMachineScreen<CoalGeneratorMenu> {
 
     private static final ResourceLocation GUI =
             ResourceLocation.fromNamespaceAndPath(Frogetech.MODID,
@@ -18,7 +17,7 @@ public class CoalGeneratorScreen extends AbstractContainerScreen<CoalGeneratorMe
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mx, int my) {
+    protected void renderMainBg(GuiGraphics guiGraphics, float partialTick, int mx, int my) {
         guiGraphics.blit(GUI, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
 
         float burnProg = menu.getBurnProgress();
@@ -55,8 +54,15 @@ public class CoalGeneratorScreen extends AbstractContainerScreen<CoalGeneratorMe
         if (mouseX >= leftPos + 152 && mouseX <= leftPos + 167 &&
                 mouseY >= topPos + 18 && mouseY <= topPos + 70) {
             guiGraphics.renderTooltip(font,
-                    Component.literal(menu.getEnergy() + "/" +
-                            menu.getMaxEnergy() + "Qt"),
+                    Component.literal(menu.getEnergy() + " / " +
+                            menu.getMaxEnergy() + " Qt"),
+                    mouseX, mouseY);
+        }
+
+        if (mouseX >= leftPos + 152 && mouseX <= leftPos + 168 &&
+                mouseY >= topPos + 72 && mouseY <= topPos + 82) {
+            guiGraphics.renderTooltip(font,
+                    Component.literal("Tier " + menu.getTierLevel()),
                     mouseX, mouseY);
         }
     }
