@@ -43,7 +43,8 @@ public class ToadToasterMenu extends AbstractQuakMachineMenu {
 
 
     public ToadToasterMenu(int id, Inventory inv, FriendlyByteBuf buf) {
-        this(id, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(4));
+        // Must match ToadToasterBlockEntity#data.getCount() (currently 5)
+        this(id, inv, inv.player.level().getBlockEntity(buf.readBlockPos()), new SimpleContainerData(5));
     }
     public ToadToasterMenu(int id, Inventory inv, BlockEntity be, ContainerData data) {
         super(ModMenuTypes.TOAD_TOASTER_MENU.get(), id,

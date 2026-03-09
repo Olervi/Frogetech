@@ -73,12 +73,16 @@ public class CableBlock extends BaseEntityBlock {
         BlockPos neighborPos = pos.relative(dir);
         BlockState neighborState = level.getBlockState(neighborPos);
 
-        //Other cable -> connect everytime
-        if(neighborState.getBlock() instanceof CableBlock) return true;
+        // Other cable -> connect always
+        if (neighborState.getBlock() instanceof CableBlock) return true;
 
-        //BE which implements QNM -> connect
+        // Side-aware connection to network members
         BlockEntity be = level.getBlockEntity(neighborPos);
-        return be instanceof QuakNetworkMember;
+        if (be instanceof QuakNetworkMember member) {
+            // From the neighbor perspective, the cable touches the opposite side.
+            return member.canConnectFrom(dir.getOpposite());
+        }
+        return false;
     }
 
     private BlockState getStateForPos(LevelAccessor level, BlockPos pos) {

@@ -29,7 +29,6 @@ public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity imple
 
     //Tiered Values
     private static final int TIER_MAX_EXTRACT = 0;
-    private static final int ENERGY_PER_TICK = 20;
 
     public final ItemStackHandler itemHandler = new ItemStackHandler(2) {
         @Override
@@ -152,7 +151,13 @@ public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity imple
         }
 
         SmeltingRecipe recipe = recipeHolder.get().value();
-        cookingTotalTime = (int) (recipe.getCookingTime() / currentTier.consumerEfficiency);
+
+        // Recompute only if something relevant changed.
+        int computedTotalTime = (int) (recipe.getCookingTime() / currentTier.consumerEfficiency);
+        if (computedTotalTime != cookingTotalTime) {
+            cookingTotalTime = computedTotalTime;
+            setChanged();
+        }
 
         if (!canCook(recipe, recipeInput)) {
             if (cookingProgress > 0) {
@@ -187,7 +192,9 @@ public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity imple
         if (result.isEmpty()) return false;
         if (outputStack.isEmpty()) return true;
         if (!ItemStack.isSameItemSameComponents(outputStack, result)) return false;
-        return outputStack.getCount() + result.getCount() <= outputStack.getMaxStackSize();
+
+        int maxStackSize = Math.min(outputStack.getMaxStackSize(), result.getMaxStackSize());
+        return outputStack.getCount() + result.getCount() <= maxStackSize;
     }
 
     private void cook(SmeltingRecipe recipe, SingleRecipeInput input) {

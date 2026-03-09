@@ -66,7 +66,7 @@ public class QuakNetwork {
             return;
         }
 
-        int availableEnergy = 0;
+        long availableEnergy = 0;
         List<QuakNetworkMember> producers = new ArrayList<>();
         for (QuakNetworkMember member : members.values()) {
             if (member.isProducer()) {
@@ -82,48 +82,72 @@ public class QuakNetwork {
             return;
         }
 
-        List<QuakNetworkMember> consumers = new ArrayList<>();
-        int totalDemand = 0;
+        // Compute demand per consumer once, then distribute fairly without dropping leftovers.
+        List<ConsumerDemand> consumerDemands = new ArrayList<>();
+        long totalDemand = 0;
         for (QuakNetworkMember member : members.values()) {
-            if (member.isConsumer()) {
-                IQuakStorageProvider provider = (IQuakStorageProvider) member;
-                int canReceive = provider.getEnergyStorage()
-                        .insertEnergy(availableEnergy, true);
-                if (canReceive > 0) {
-                    consumers.add(member);
-                    totalDemand += canReceive;
-                }
+            if (!member.isConsumer()) continue;
+            IQuakStorageProvider provider = (IQuakStorageProvider) member;
+            int demand = provider.getEnergyStorage().insertEnergy((int) Math.min(Integer.MAX_VALUE, availableEnergy), true);
+            if (demand > 0) {
+                consumerDemands.add(new ConsumerDemand(member, demand));
+                totalDemand += demand;
             }
         }
-        if (totalDemand <= 0) return;
 
-        int toDistribute = Math.min(availableEnergy, totalDemand);
-        lastTransferredAmount = toDistribute;
+        if (totalDemand <= 0) {
+            updateCableThroughput();
+            return;
+        }
 
+        int toDistribute = (int) Math.min(availableEnergy, totalDemand);
+
+        // Extract only what we will actually distribute.
         int remainingToExtract = toDistribute;
         for (QuakNetworkMember producer : producers) {
             if (remainingToExtract <= 0) break;
             IQuakStorageProvider provider = (IQuakStorageProvider) producer;
-            remainingToExtract -= provider.getEnergyStorage()
-                    .extractEnergy(remainingToExtract, false);
+            remainingToExtract -= provider.getEnergyStorage().extractEnergy(remainingToExtract, false);
         }
 
+        // Proportional distribution by demand + remainder pass.
         int remainingToInsert = toDistribute;
-        for (QuakNetworkMember consumer : consumers) {
+        int insertedTotal = 0;
+
+        // First pass: proportional shares.
+        for (ConsumerDemand cd : consumerDemands) {
             if (remainingToInsert <= 0) break;
-            IQuakStorageProvider provider = (IQuakStorageProvider) consumer;
-            int share = (int) Math.ceil((double) remainingToInsert / consumers.size());
-            remainingToInsert -= provider.getEnergyStorage()
-                    .insertEnergy(share, false);
+            IQuakStorageProvider provider = (IQuakStorageProvider) cd.member;
+            int share = (int) Math.min(cd.demand, (long) toDistribute * cd.demand / totalDemand);
+            if (share <= 0) continue;
+            int inserted = provider.getEnergyStorage().insertEnergy(share, false);
+            insertedTotal += inserted;
+            remainingToInsert -= inserted;
+            cd.remainingDemand -= inserted;
         }
 
-        lastTransferredAmount = toDistribute;
+        // Second pass: give remaining energy to anyone still demanding.
+        if (remainingToInsert > 0) {
+            for (ConsumerDemand cd : consumerDemands) {
+                if (remainingToInsert <= 0) break;
+                if (cd.remainingDemand <= 0) continue;
+                IQuakStorageProvider provider = (IQuakStorageProvider) cd.member;
+                int give = Math.min(remainingToInsert, cd.remainingDemand);
+                int inserted = provider.getEnergyStorage().insertEnergy(give, false);
+                insertedTotal += inserted;
+                remainingToInsert -= inserted;
+            }
+        }
+
+        lastTransferredAmount = insertedTotal;
         updateCableThroughput();
     }
 
     private void updateCableThroughput() {
         for (QuakNetworkMember member : members.values()) {
             if (member.isConductor() && member instanceof CableBlockEntity cable) {
+                if (cable.getCachedThroughput() == lastTransferredAmount) continue;
+
                 cable.setCachedThroughput(lastTransferredAmount);
                 Level level = cable.getNetworkLevel();
                 BlockPos cablePos = cable.getNetworkPos();
@@ -133,6 +157,18 @@ public class QuakNetwork {
                             level.getBlockState(cablePos), 3);
                 }
             }
+        }
+    }
+
+    private static final class ConsumerDemand {
+        private final QuakNetworkMember member;
+        private final int demand;
+        private int remainingDemand;
+
+        private ConsumerDemand(QuakNetworkMember member, int demand) {
+            this.member = member;
+            this.demand = demand;
+            this.remainingDemand = demand;
         }
     }
 

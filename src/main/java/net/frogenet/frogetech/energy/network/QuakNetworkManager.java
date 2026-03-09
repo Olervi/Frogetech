@@ -1,7 +1,6 @@
 package net.frogenet.frogetech.energy.network;
 
 
-import com.jcraft.jorbis.Block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -31,7 +30,7 @@ public class QuakNetworkManager {
 
     public void onMemberAdded(QuakNetworkMember newMember) {
         BlockPos pos = newMember.getNetworkPos();
-        List<QuakNetwork> neighborNetworks = getNeighborNetworks(pos);
+        List<QuakNetwork> neighborNetworks = getNeighborNetworks(pos, newMember);
         if (neighborNetworks.isEmpty()) {
             QuakNetwork network = new QuakNetwork();
             network.addMember(newMember);
@@ -74,7 +73,8 @@ public class QuakNetworkManager {
     }
 
     public void tick() {
-        for (QuakNetwork network : networks.values()){
+        // Iterate over a snapshot in case networks are added/removed due to block updates during ticking.
+        for (QuakNetwork network : new ArrayList<>(networks.values())) {
             network.tick();
         }
     }
@@ -89,13 +89,23 @@ public class QuakNetworkManager {
         }
     }
 
-    private List<QuakNetwork> getNeighborNetworks(BlockPos pos) {
+    private List<QuakNetwork> getNeighborNetworks(BlockPos pos, QuakNetworkMember newMember) {
         Set<UUID> seen = new HashSet<>();
         List<QuakNetwork> result = new ArrayList<>();
+
         for (Direction dir : Direction.values()) {
+            // Check if the new member wants to connect on this face.
+            if (!newMember.canConnectFrom(dir)) continue;
+
             BlockPos neighborPos = pos.relative(dir);
+
+            // Neighbor must exist and accept a connection on the opposite face.
+            BlockEntity neighborBe = level.getBlockEntity(neighborPos);
+            if (!(neighborBe instanceof QuakNetworkMember neighborMember)) continue;
+            if (!neighborMember.canConnectFrom(dir.getOpposite())) continue;
+
             UUID id = posToNetwork.get(neighborPos);
-            if(id != null && seen.add(id)){
+            if (id != null && seen.add(id)) {
                 QuakNetwork net = networks.get(id);
                 if (net != null) result.add(net);
             }
