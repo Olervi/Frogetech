@@ -19,10 +19,17 @@ public abstract class AbstractQuakMachineMenu extends AbstractContainerMenu {
         this.machineEntity = be;
     }
 
+    public boolean panelOpen = false;
+
     protected void addUpgradeSlot() {
         upgradeSlotIndex = slots.size();
         this.addSlot(new SlotItemHandler(machineEntity.upgradeSlot, 0,
-                186, 42));
+                184, 58) {
+            @Override
+            public boolean isActive() {
+                return panelOpen;
+            }
+        });
     }
 
     public int getUpgradeSlotIndex() {

@@ -5,6 +5,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -95,6 +98,7 @@ public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity imple
         if (level.isClientSide()) return;
 
         blockEntity.tickServer(level);
+        blockEntity.tickFrogSitting(level, pos);
     }
 
     @Override
@@ -259,6 +263,17 @@ public class ToadToasterBlockEntity extends AbstractQuakMachineBlockEntity imple
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
         return new ToadToasterMenu(id, inventory, this, this.data);
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     public void drops(){

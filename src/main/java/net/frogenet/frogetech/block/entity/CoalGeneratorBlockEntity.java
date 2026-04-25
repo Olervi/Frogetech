@@ -92,6 +92,8 @@ public class CoalGeneratorBlockEntity extends AbstractQuakMachineBlockEntity imp
         if (wasActive != be.isActive()) {
             level.sendBlockUpdated(pos, state, state, 3);
         }
+
+        be.tickFrogSitting(level, pos);
     }
 
     @Override

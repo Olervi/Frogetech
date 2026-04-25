@@ -44,6 +44,7 @@ public class CoalGeneratorMenu extends AbstractQuakMachineMenu {
         addDataSlots(this.data);
     }
 
+
     @Override
     public ItemStack handleQuickMove(Player player, int index) {
         Slot source = slots.get(index);

@@ -4,11 +4,16 @@ import net.frogenet.frogetech.energy.QuakEnergyStorage;
 import net.frogenet.frogetech.energy.network.IQuakStorageProvider;
 import net.frogenet.frogetech.energy.network.QuakNetwork;
 import net.frogenet.frogetech.energy.network.QuakNetworkMember;
+import net.frogenet.frogetech.entity.custom.FrogEntity;
 import net.frogenet.frogetech.tier.MachineTier;
 import net.frogenet.frogetech.tier.UpgradeItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.animal.frog.Frog;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -17,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 public abstract class AbstractQuakMachineBlockEntity extends BlockEntity implements QuakNetworkMember, IQuakStorageProvider {
 
@@ -45,7 +51,68 @@ public abstract class AbstractQuakMachineBlockEntity extends BlockEntity impleme
     }
 
     @Nullable
+    private UUID sittingFrogUUID = null;
+    private float sittingFrogYRot = 0f;
+
+    @Nullable
     private QuakNetwork network;
+
+    private static boolean isSittableFrog(Entity entity) {
+        return entity instanceof FrogEntity || entity instanceof Frog;
+    }
+
+    public boolean hasSittingFrog() {
+        return sittingFrogUUID != null;
+    }
+
+    public void setSittingFrog(Mob mob, float yRot) {
+        this.sittingFrogUUID = mob.getUUID();
+        this.sittingFrogYRot = yRot;
+        setChanged();
+        if (level != null && !level.isClientSide()) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+    }
+
+    public void releaseSittingFrog(Level level) {
+        if (sittingFrogUUID == null) return;
+        if (!level.isClientSide() && level instanceof ServerLevel serverLevel) {
+            Entity entity = serverLevel.getEntity(sittingFrogUUID);
+            if (entity instanceof FrogEntity modFrog) {
+                modFrog.clearSittingPos();
+            } else if (entity instanceof Mob mob) {
+                mob.setNoAi(false);
+                mob.getPersistentData().remove("FrogSittingX");
+                mob.getPersistentData().remove("FrogSittingY");
+                mob.getPersistentData().remove("FrogSittingZ");
+            }
+        }
+        sittingFrogUUID = null;
+        setChanged();
+    }
+
+    public void tickFrogSitting(Level level, BlockPos pos) {
+        if (sittingFrogUUID == null) return;
+        if (level.getGameTime() % 20 != 0) return;
+        if (!(level instanceof ServerLevel serverLevel)) return;
+
+        Entity entity = serverLevel.getEntity(sittingFrogUUID);
+        if (!isSittableFrog(entity)) {
+            sittingFrogUUID = null;
+            setChanged();
+            return;
+        }
+
+        Mob mob = (Mob) entity;
+        double targetX = pos.getX() + 0.5;
+        double targetY = pos.getY() + 1.0;
+        double targetZ = pos.getZ() + 0.5;
+
+        if (mob.distanceToSqr(targetX, targetY, targetZ) > 0.5
+                || Math.abs(mob.getYRot() - sittingFrogYRot) > 5f) {
+            mob.moveTo(targetX, targetY, targetZ, sittingFrogYRot, 0f);
+        }
+    }
 
     protected void updateTier() {
         MachineTier newTier = UpgradeItem.getTierForItem(upgradeSlot.getStackInSlot(0));
@@ -88,6 +155,10 @@ public abstract class AbstractQuakMachineBlockEntity extends BlockEntity impleme
         super.saveAdditional(tag, registries);
         tag.put("energy", energyStorage.serializeNBT());
         tag.put("upgradeSlot", upgradeSlot.serializeNBT(registries));
+        if (sittingFrogUUID != null) {
+            tag.putUUID("sittingFrogUUID", sittingFrogUUID);
+            tag.putFloat("sittingFrogYRot", sittingFrogYRot);
+        }
     }
 
     @Override
@@ -127,6 +198,10 @@ public abstract class AbstractQuakMachineBlockEntity extends BlockEntity impleme
         upgradeSlot.deserializeNBT(registries, tag.getCompound("upgradeSlot"));
         updateTier();
         energyStorage.deserializeNBT(tag.getCompound("energy"));
+        if (tag.hasUUID("sittingFrogUUID")) {
+            sittingFrogUUID = tag.getUUID("sittingFrogUUID");
+            sittingFrogYRot = tag.getFloat("sittingFrogYRot");
+        }
     }
 
 

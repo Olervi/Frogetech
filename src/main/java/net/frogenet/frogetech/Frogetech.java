@@ -6,6 +6,7 @@ import net.frogenet.frogetech.block.entity.ModBlockEntities;
 import net.frogenet.frogetech.block.entity.renderer.PedestalBlockEntityRenderer;
 import net.frogenet.frogetech.client.QuakHudOverlay;
 import net.frogenet.frogetech.energy.network.QuakNetworkEvents;
+import net.frogenet.frogetech.entity.FrogSittingEvents;
 import net.frogenet.frogetech.entity.ModEntities;
 import net.frogenet.frogetech.entity.client.FrogRenderer;
 import net.frogenet.frogetech.entity.custom.FrogEntity;
@@ -45,6 +46,7 @@ public class Frogetech {
 
         NeoForge.EVENT_BUS.register(this);
         NeoForge.EVENT_BUS.register(new QuakNetworkEvents());
+        NeoForge.EVENT_BUS.register(new FrogSittingEvents());
 
         ModCreativeModeTabs.register(modEventBus);
         ModMenuTypes.register(modEventBus);

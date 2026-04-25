@@ -1,5 +1,10 @@
 package net.frogenet.frogetech.entity.custom;
 
+import net.frogenet.frogetech.block.entity.AbstractQuakMachineBlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -7,6 +12,9 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.animation.*;
@@ -17,8 +25,70 @@ public class FrogEntity extends PathfinderMob implements GeoEntity {
 
     private static final String CONTROLLER_NAME = "controller";
 
+    @Nullable
+    private BlockPos sittingPos = null;
+
     public FrogEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
+    }
+
+    public boolean isSittingOnBlock() {
+        return sittingPos != null;
+    }
+
+    @Nullable
+    public BlockPos getSittingPos() {
+        return sittingPos;
+    }
+
+    public void setSittingPos(BlockPos pos) {
+        this.sittingPos = pos;
+        this.setNoAi(true);
+        this.getNavigation().stop();
+        this.setDeltaMovement(Vec3.ZERO);
+    }
+
+    public void clearSittingPos() {
+        this.sittingPos = null;
+        this.setNoAi(false);
+    }
+
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        if (player.isShiftKeyDown() && isSittingOnBlock()) {
+            if (!level().isClientSide()) {
+                BlockEntity be = level().getBlockEntity(sittingPos);
+                if (be instanceof AbstractQuakMachineBlockEntity machine) {
+                    machine.releaseSittingFrog(level());
+                } else {
+                    clearSittingPos();
+                }
+            }
+            return InteractionResult.sidedSuccess(level().isClientSide());
+        }
+        return super.mobInteract(player, hand);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        if (sittingPos != null) {
+            CompoundTag posTag = new CompoundTag();
+            posTag.putInt("x", sittingPos.getX());
+            posTag.putInt("y", sittingPos.getY());
+            posTag.putInt("z", sittingPos.getZ());
+            tag.put("SittingPos", posTag);
+        }
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("SittingPos")) {
+            CompoundTag posTag = tag.getCompound("SittingPos");
+            this.sittingPos = new BlockPos(posTag.getInt("x"), posTag.getInt("y"), posTag.getInt("z"));
+            this.setNoAi(true);
+        }
     }
 
     @Override
